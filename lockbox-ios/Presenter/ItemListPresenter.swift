@@ -269,7 +269,7 @@ extension ItemListPresenter {
         let searchCell = [LoginListCellConfiguration.Search]
 
         let loginCells = items.map { login -> LoginListCellConfiguration in
-            let titleText = login.hostname
+            let titleText = self.titleFromHostname(login.hostname)
             let usernameEmpty = login.username == "" || login.username == nil
             let usernameText = usernameEmpty ? Constant.string.usernamePlaceholder : login.username!
 
@@ -285,7 +285,7 @@ extension ItemListPresenter {
         }
 
         return items.filter { item -> Bool in
-            return [item.username, item.hostname]
+            return [item.username, self.titleFromHostname(item.hostname)]
                     .compactMap {
                         $0?.localizedCaseInsensitiveContains(text) ?? false
                     }
@@ -293,6 +293,12 @@ extension ItemListPresenter {
                         $0 || $1
                     }
         }
+    }
+
+    private func titleFromHostname(_ hostname: String) -> String {
+        return hostname
+                .replacingOccurrences(of: "http://", with: "")
+                .replacingOccurrences(of: "https://", with: "")
     }
 
     func dismissKeyboard() {
